@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Carimbo de Acionamento - TOA</title>
+<style>
+    :root{
+        --brand: #b00020;
+        --brand-dark: #7b0016;
+        --blue: #0b63ce;
+        --green: #198754;
+        --amber: #d79b00;
+        --bg: #eef2f7;
+        --panel: #ffffff;
+        --panel-soft: #f8fafc;
+        --line: #d9e1ec;
+        --text: #1f2937;
+        --muted: #667085;
+        --shadow: 0 12px 30px rgba(15, 23, 42, .08);
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+        margin:0;
+        font-family:"Segoe UI", Roboto, Arial, sans-serif;
+        background:linear-gradient(135deg,#eef2f7 0%,#f8fafc 45%,#edf1f5 100%);
+        color:var(--text);
+    }
+
+    .app-shell{
+        max-width:1180px;
+        margin:0 auto;
+        padding:24px;
+    }
+
+    .topbar{
+        background:linear-gradient(135deg,var(--brand),var(--brand-dark));
+        color:#fff;
+        border-radius:18px;
+        padding:22px 26px;
+        box-shadow:var(--shadow);
+        margin-bottom:18px;
+        display:flex;
+        justify-content:space-between;
+        gap:20px;
+        align-items:center;
+    }
+
+    .topbar h1{
+        margin:0;
+        font-size:24px;
+        letter-spacing:.3px;
+    }
+
+    .topbar p{
+        margin:6px 0 0;
+        color:rgba(255,255,255,.86);
+        font-size:14px;
+    }
+
+    .badge{
+        border:1px solid rgba(255,255,255,.25);
+        background:rgba(255,255,255,.12);
+        padding:8px 12px;
+        border-radius:999px;
+        white-space:nowrap;
+        font-size:13px;
+        font-weight:700;
+    }
+
+    .card{
+        background:var(--panel);
+        border:1px solid rgba(15,23,42,.08);
+        border-radius:18px;
+        box-shadow:var(--shadow);
+        padding:18px;
+    }
+
+    form{ margin:0; }
+
+    .section{
+        border:1px solid var(--line);
+        background:var(--panel-soft);
+        border-radius:16px;
+        padding:16px;
+        margin-bottom:14px;
+    }
+
+    .section-title{
+        margin:0 0 14px;
+        display:flex;
+        align-items:center;
+        gap:10px;
+        font-size:15px;
+        font-weight:800;
+        color:#111827;
+        text-transform:uppercase;
+        letter-spacing:.4px;
+    }
+
+    .section-title::before{
+        content:"";
+        width:9px;
+        height:9px;
+        border-radius:999px;
+        background:var(--brand);
+        box-shadow:0 0 0 4px rgba(176,0,32,.10);
+    }
+
+    .grid{
+        display:grid;
+        grid-template-columns:repeat(12, minmax(0,1fr));
+        gap:14px;
+        align-items:start;
+    }
+
+    .col-12{ grid-column:span 12; }
+    .col-8{ grid-column:span 8; }
+    .col-7{ grid-column:span 7; }
+    .col-6{ grid-column:span 6; }
+    .col-5{ grid-column:span 5; }
+    .col-4{ grid-column:span 4; }
+    .col-3{ grid-column:span 3; }
+
+    label{
+        display:block;
+        font-weight:700;
+        margin-bottom:6px;
+        font-size:12px;
+        color:#344054;
+        letter-spacing:.2px;
+    }
+
+    input[type="text"],
+    input[type="datetime-local"],
+    select,
+    textarea{
+        width:100%;
+        border:1px solid #cbd5e1;
+        border-radius:10px;
+        padding:11px 12px;
+        background:#fff;
+        color:#111827;
+        font-size:14px;
+        outline:none;
+        transition:.15s ease;
+    }
+
+    textarea{
+        min-height:104px;
+        resize:vertical;
+        line-height:1.45;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus{
+        border-color:var(--blue);
+        box-shadow:0 0 0 4px rgba(11,99,206,.10);
+    }
+
+    .field.red select,
+    .field.red input,
+    .field.red textarea{
+        border-left:5px solid var(--brand);
+    }
+
+    .field.yellow select,
+    .field.yellow input,
+    .field.yellow textarea{
+        border-left:5px solid var(--amber);
+        background:#fffdf5;
+    }
+
+    .field.blue select,
+    .field.blue input,
+    .field.blue textarea{
+        border-left:5px solid var(--blue);
+    }
+
+    .protected{ position:relative; }
+    .protected input[readonly]{ cursor:not-allowed; color:#334155; }
+    .protected .lock{
+        position:absolute;
+        right:12px;
+        top:34px;
+        color:#946200;
+        font-size:12px;
+    }
+
+    .imediato-btn{
+        width:100%;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        min-height:43px;
+        padding:10px 14px;
+        border-radius:10px;
+        font-weight:900;
+        cursor:pointer;
+        user-select:none;
+        background:linear-gradient(180deg,#22c55e,#15803d);
+        color:#fff;
+        border:1px solid rgba(0,0,0,.08);
+        letter-spacing:.3px;
+    }
+
+    .imediato-btn.checked{
+        background:linear-gradient(180deg,#ef4444,#b91c1c);
+    }
+
+    .imediato-btn input[type="checkbox"]{
+        width:1px;
+        height:1px;
+        opacity:0;
+        position:absolute;
+        pointer-events:none;
+    }
+
+    .muted{
+        color:var(--muted);
+        font-size:12px;
+        margin-top:6px;
+        line-height:1.35;
+    }
+
+    .actions{
+        display:grid;
+        grid-template-columns:1fr 1fr 1fr;
+        gap:12px;
+        margin:18px 0 14px;
+    }
+
+    .btn{
+        min-height:46px;
+        border:none;
+        border-radius:12px;
+        padding:12px 14px;
+        cursor:pointer;
+        font-weight:900;
+        font-size:14px;
+        letter-spacing:.2px;
+    }
+
+    #exportarTxt{ background:var(--blue); color:#fff; }
+    #copiarCarimbo{ background:var(--green); color:#fff; }
+    #limparFormulario{ background:#e5e7eb; color:#111827; }
+    .btn:hover{ filter:brightness(.96); transform:translateY(-1px); }
+
+    .carimbo-card{
+        border:1px solid var(--line);
+        border-radius:16px;
+        overflow:hidden;
+        background:#fff;
+        margin-top:10px;
+    }
+
+    .carimbo-header{
+        padding:13px 16px;
+        background:#111827;
+        color:#fff;
+        display:flex;
+        justify-content:space-between;
+        gap:12px;
+        align-items:center;
+    }
+
+    .carimbo-header strong{
+        font-size:14px;
+        text-transform:uppercase;
+        letter-spacing:.4px;
+    }
+
+    .carimbo-header span{
+        color:#cbd5e1;
+        font-size:12px;
+    }
+
+    #txtArea{
+        margin:0;
+        min-height:230px;
+        max-height:460px;
+        overflow:auto;
+        padding:16px;
+        background:#0b1220;
+        color:#e5e7eb;
+        font-family:"Consolas", "Courier New", monospace;
+        font-size:13px;
+        line-height:1.55;
+        white-space:pre-wrap;
+        border:0;
+    }
+
+    #txtArea:empty::before{
+        content:"O carimbo gerado aparecerá aqui após clicar em GERAR CARIMBO.";
+        color:#94a3b8;
+    }
+
+    @media (max-width:760px){
+        .app-shell{ padding:14px; }
+        .topbar{ flex-direction:column; align-items:flex-start; }
+        .col-3,.col-4,.col-5,.col-6,.col-7,.col-8{ grid-column:span 12; }
+        .actions{ grid-template-columns:1fr; }
+    }
+</style>
+</head>
+<body>
+<div class="app-shell">
+    <header class="topbar">
+        <div>
+            <h1>CARIMBO DE ACIONAMENTO - TOA</h1>
+            <p>Formulário técnico para gerar e copiar carimbos operacionais.</p>
+        </div>
+        <div class="badge">NOC / Operação / Campo</div>
+    </header>
+
+    <main class="card">
+        <form id="formulario" autocomplete="off">
+
+            <section class="section">
+                <h2 class="section-title">Dados da atividade</h2>
+                <div class="grid">
+                    <div class="col-6 field red">
+                        <label for="tipoAtividade">TIPO DE ATIVIDADE:</label>
+                        <select id="tipoAtividade" name="tipo_atividade">
+                            <option value="">Selecione...</option>
+                            <option value="REC">REC</option>
+                            <option value="RAL CORRETIVA">RAL CORRETIVA</option>
+                            <option value="RAL QUALIDADE">RAL QUALIDADE</option>
+                            <option value="TCQ">TCQ</option>
+                            <option value="INCIDENTE CORRETIVO">INCIDENTE CORRETIVO</option>
+                        </select>
+                    </div>
+
+                    <div class="col-6 field red">
+                        <label for="tipoAcesso">TIPO DE ACESSO:</label>
+                        <select id="tipoAcesso" name="tipo_acesso">
+                            <option value="">-- selecione --</option>
+                        </select>
+                    </div>
+
+                    <div class="col-6 field red">
+                        <label for="sintoma">SINTOMA:</label>
+                        <select id="sintoma" name="sintoma">
+                            <option value="">Selecione...</option>
+                        </select>
+                    </div>
+
+                    <div class="col-6 field red">
+                        <label for="perfilTecnico">PERFIL DO TÉCNICO A SER ACIONADO:</label>
+                        <input type="text" id="perfilTecnico" name="perfil_tecnico" readonly>
+                    </div>
+
+                    <div class="col-12 field yellow protected">
+                        <label for="caracteristicaAtividade">CARACTERISTICA DA ATIVIDADE:</label>
+                        <input type="text" id="caracteristicaAtividade" name="caracteristica_atividade" readonly title="Valor controlado automaticamente pelas regras do formulário">
+                        <span class="lock" aria-hidden="true"></span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">Cliente e atendimento</h2>
+                <div class="grid">
+                    <div class="col-8 field">
+                        <label for="nome_fantasia">NOME FANTASIA:</label>
+                        <input type="text" id="nome_fantasia" name="nome_fantasia">
+                    </div>
+
+                    <div class="col-4 field">
+                        <label for="cep">CEP:</label>
+                        <input type="text" id="cep" name="cep">
+                    </div>
+
+                    <div class="col-6 field">
+                        <label for="nome_cliente">NOME DO CLIENTE:</label>
+                        <input type="text" id="nome_cliente" name="nome_cliente">
+                    </div>
+
+                    <div class="col-6 field">
+                        <label for="local_atendimento">LOCAL DO ATENDIMENTO (ENDEREÇO/NÚMERO/BAIRRO/CIDADE):</label>
+                        <input type="text" id="local_atendimento" name="local_atendimento">
+                    </div>
+
+                    <div class="col-4 field blue">
+                        <label for="uf">UF:</label>
+                        <select id="uf" name="uf">
+                            <option value="">Selecione...</option>
+                            <option value="ACRE">ACRE</option>
+                            <option value="DISTRITO FEDERAL">DISTRITO FEDERAL</option>
+                            <option value="GOIÁS">GOIÁS</option>
+                            <option value="MATO GROSSO">MATO GROSSO</option>
+                            <option value="MATO GROSSO DO SUL">MATO GROSSO DO SUL</option>
+                            <option value="TOCANTINS">TOCANTINS</option>
+                            <option value="RONDÔNIA">RONDÔNIA</option>
+                        </select>
+                    </div>
+
+                    <div class="col-4 field">
+                        <label for="telefone_contato">TELEFONE DE CONTATO:</label>
+                        <input type="text" id="telefone_contato" name="telefone_contato">
+                    </div>
+
+                    <div class="col-4 field">
+                        <label for="dataAgendamento">DATA / HORÁRIO DE AGENDAMENTO:</label>
+                        <input type="datetime-local" id="dataAgendamento" name="data_agendamento">
+                    </div>
+
+                    <div class="col-3 field">
+                        <label>&nbsp;</label>
+                        <label class="imediato-btn" id="btnImediato" title="Marque como IMEDIATO">
+                            <input type="checkbox" id="chkImediato" name="imediato" />
+                            IMEDIATO
+                        </label>
+                        <div class="muted">Ao marcar, o agendamento será tratado como IMEDIATO.</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">Localização e técnico</h2>
+                <div class="grid">
+                    <div class="col-4 field blue">
+                        <label for="centroManutencao">CENTRO DE MANUTENÇÃO:</label>
+                        <select id="centroManutencao" name="centro_manutencao">
+                            <option value="">Selecione a UF primeiro</option>
+                        </select>
+                    </div>
+
+                    <div class="col-5 field blue">
+                        <label for="nomeTecnico">NOME DO TÉCNICO A SER ACIONADO:</label>
+                        <select id="nomeTecnico" name="nome_tecnico">
+                            <option value="">Selecione o Centro de Manutenção primeiro</option>
+                        </select>
+                    </div>
+
+                    <div class="col-3 field blue">
+                        <label for="matricula">MATRÍCULA:</label>
+                        <input type="text" id="matricula" name="matricula">
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">Diagnóstico e ação</h2>
+                <div class="grid">
+                    <div class="col-12 field">
+                        <label for="sintoma_causa">SINTOMA E PROVÁVEL CAUSA:</label>
+                        <textarea id="sintoma_causa" name="sintoma_causa"></textarea>
+                    </div>
+
+                    <div class="col-12 field">
+                        <label for="acao_recomendada">AÇÃO RECOMENDADA:</label>
+                        <textarea id="acao_recomendada" name="acao_recomendada"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">Observações técnicas</h2>
+                <div class="grid">
+                    <div class="col-6 field">
+                        <label for="cliente_sdwan">CLIENTE POSSUI SDWAN?</label>
+                        <input type="text" id="cliente_sdwan" name="cliente_sdwan">
+                    </div>
+
+                    <div class="col-6 field">
+                        <label for="modelo_sdwan">QUAL MODELO DA CAIXA SDWAN?</label>
+                        <input type="text" id="modelo_sdwan" name="modelo_sdwan">
+                    </div>
+
+                    <div class="col-6 field">
+                        <label for="equipamento_sobressalente">NECESSÁRIO EQUIPAMENTO DE TESTE E SOBRESSALENTE:</label>
+                        <input type="text" id="equipamento_sobressalente" name="equipamento_sobressalente">
+                    </div>
+
+                    <div class="col-6 field">
+                        <label for="liberacao_acesso">NECESSÁRIO LIBERAÇÃO DE ACESSO:</label>
+                        <input type="text" id="liberacao_acesso" name="liberacao_acesso">
+                    </div>
+
+                    <div class="col-12 field">
+                        <label for="necessario_integracao">NECESSÁRIO INTEGRAÇÃO:</label>
+                        <input type="text" id="necessario_integracao" name="necessario_integracao">
+                    </div>
+                </div>
+            </section>
+
+            <div class="actions">
+                <button type="button" id="exportarTxt" class="btn">GERAR CARIMBO</button>
+                <button type="button" id="copiarCarimbo" class="btn">COPIAR CARIMBO</button>
+                <button type="button" id="limparFormulario" class="btn">LIMPAR FORMULÁRIO</button>
+            </div>
+
+            <section class="carimbo-card" aria-label="Carimbo gerado">
+                <div class="carimbo-header">
+                    <strong>Carimbo gerado</strong>
+                    <span>Texto final para conferência e cópia</span>
+                </div>
+                <pre id="txtArea" aria-live="polite"></pre>
+            </section>
+
+        </form>
+    </main>
+</div>
+
+<script>
+// === CAMPOS (mesma lógica original, sem alteração de regras) ===
+const tipoAtividade = document.getElementById("tipoAtividade");
+const tipoAcesso = document.getElementById("tipoAcesso");
+const sintoma = document.getElementById("sintoma");
+const perfilTecnico = document.getElementById("perfilTecnico");
+const caracteristica = document.getElementById("caracteristicaAtividade");
+
+const uf = document.getElementById("uf");
+const centro = document.getElementById("centroManutencao");
+const nomeTec = document.getElementById("nomeTecnico");
+const matricula = document.getElementById("matricula");
+const dataAgendamento = document.getElementById("dataAgendamento");
+const chkImediato = document.getElementById("chkImediato");
+const btnImediato = document.getElementById("btnImediato");
+const txtArea = document.getElementById("txtArea");
+const btnCopiar = document.getElementById("copiarCarimbo");
+const btnLimpar = document.getElementById("limparFormulario");
+
+// ACESSOS GERÁIS
+const acessosGerais = ["BSOW","MÓVEL 4G 5G","BSOD","TERCEIRO","GPON","GPON RESID","ADE","CABO INTERNO","FO","RÁDIO","VSAT"];
+
+// SINTOMAS
+function setSintomaPreventiva() {
+    sintoma.innerHTML = `<option value="">Selecione...</option>
+    <option value="PREVENTIVA POP">PREVENTIVA POP</option>
+    <option value="PREVENTIVA CLIENTE">PREVENTIVA CLIENTE</option>`;
+}
+function resetSintoma() {
+    sintoma.innerHTML = `<option value="">Selecione...</option>
+    <option value="INTERMITENTE">INTERMITENTE</option>
+    <option value="INOPERANTE">INOPERANTE</option>`;
+}
+
+// UF → CENTROS
+const centrosPorUF = {
+    "ACRE":["RBO"],
+    "DISTRITO FEDERAL":["BSA"],
+    "GOIÁS":["GNA","ANS","RVD","JTI"],
+    "MATO GROSSO":["BAG","CBA","CCS","ROI","SNO"],
+    "MATO GROSSO DO SUL":["CPE","DOS","TLS"],
+    "TOCANTINS":["ARN","GUR","PMJ"],
+    "RONDÔNIA":["JIP","PVO"]
+};
+
+// TÉCNICOS
+const tecnicos = {
+    "RBO":{"ALESSANDRO SOARES MAIA":"587167","GLEISON DE SOUZA LIMA":"576155","JOSÉ CARLOS OLIVEIRA":"Z099560","ALOCAR CONFORME A DISPONIBILIDADE":""},
+    "BSA":{"ANTÔNIO CARLOS MOREIRA DE OLIVEIRA":"14835","DIEGO COELHO DE SOUZA":"18983","GUILHERME DAMACENA SANTOS ZEFERINO":"000159","JONATHAS FRANCISCO DE SOUZA":"15513","RUBENS SOBREIRA DE MAGALHÃES":"13314","WANDERSON DIAS DA SILVEIRA":"20517","ALOCAR CONFORME A DISPONIBILIDADE":""},
+    "GNA":{"DANIEL GARCIA ROSA":"526967","EDSON PEREIRA GUEDES JÚNIOR":"535716","ELIAS DA SILVA CRUZ":"544221","HÉLIO RODRIGUES NOGUEIRA":"570490","JEAN LIMA DE PAULO":"535286","JOSÉ DIVINO OLIVEIRA ROSA":"547143","MARCELLO DE SOUSA BARBOSA":"527154"},
+    "ANS":{"NIXON MAURO TELES DA CUNHA":"539381"},
+    "RVD":{"ALESSANDRO CORREA FAGUNDES":"518984"},
+    "JTI":{"ALESSANDRO CORREA FAGUNDES":"518984"},
+    "BAG":{"ODINIL ONORIO DE JESUS":"518486"},
+    "CBA":{"DOUGLAS LUIZ DAMAZIO DA SILVA":"1921945","ERICK LESKO BISMARK DE MOURA":"591854","GUSTAVO BRYAN LEMES DA SILVA":"94189818","MATIAS DA SILVA DUARTE":"580196"},
+    "CCS":{"CLEITON RODRIGUES DA SILVA":"2152565"},
+    "ROI":{"THIAGO JOSÉ RODRIGUES SALLES":"1921946"},
+    "SNO":{"ELIANDRO JOSÉ DA SILVA":"1921949","MARCOS ALVES DA SILVA":"Z598326"},
+    "CPE":{"FABIANO JOSÉ GUIMARÃES":"034098","JORDIL SALDANHA BORCHES":"034852"},
+    "DOS":{"KLEBER BORGES DE NOVAIS":"134788"},
+    "TLS":{"KLEBER EDUARDO ZUMBA":"9421752"},
+    "JIP":{"PEDRO DUARTE GONZALEZ":"524747"},
+    "PVO":{"CLOVIS OLIVEIRA SANTOS":"11957","LUIZ ABRAAO RAMOS DA SILVA":"531994","MARCELINO FERREIRA NETO":"534526","MARCOS ANTONIO DA ROCHA":"598604"},
+    "ARN":{"ARMANDO ANTONIO DE SOUZA":"T8362117","TIAGO ALVEZ DOS SANTOS":"Z253866"},
+    "GUR":{"RUIMAGSON HERNANDES DA SILVA":"Z158974"},
+    "PMJ":{"WELBER VAGNO BARBOSA SILVA":"Z068833"}
+};
+
+// UF → CENTRO
+uf.addEventListener("change", () => {
+    centro.innerHTML = `<option value="">Selecione...</option>`;
+    nomeTec.innerHTML = `<option value="">Selecione o Centro de Manutenção primeiro</option>`;
+    matricula.value = "";
+    (centrosPorUF[uf.value] || []).forEach(c => centro.innerHTML += `<option value="${c}">${c}</option>`);
+});
+
+// CENTRO → TÉCNICOS
+centro.addEventListener("change", () => {
+    nomeTec.innerHTML = `<option value="">Selecione...</option>`;
+    matricula.value="";
+    const listaTec = tecnicos[centro.value] || {};
+    Object.keys(listaTec).forEach(t => nomeTec.innerHTML += `<option value="${t}">${t}</option>`);
+});
+
+// TÉCNICO → MATRÍCULA
+nomeTec.addEventListener("change", () => {
+    const t = nomeTec.value;
+    matricula.value = (tecnicos[centro.value] || {})[t] || "";
+});
+
+// TIPO DE ATIVIDADE → ACESSO / SINTOMA / PERFIL
+tipoAtividade.addEventListener("change", function(){
+    const v=this.value;
+    tipoAcesso.innerHTML = `<option value="">-- selecione --</option>`;
+    perfilTecnico.value="";
+    /* IMPORTANT: We DO NOT remove protection on `caracteristicaAtividade` here.
+       JS still writes to `caracteristicaAtividade.value` as needed; the field is readonly in UI. */
+    caracteristica.value="";
+    resetSintoma();
+
+    if(v==="REC"){ acessosGerais.forEach(a=>tipoAcesso.innerHTML+=`<option value="${a}">${a}</option>`); caracteristica.value="CORRETIVA"; }
+    else if(v==="RAL CORRETIVA"){ acessosGerais.forEach(a=>tipoAcesso.innerHTML+=`<option value="${a}">${a}</option>`); perfilTecnico.value="PERFIL NÃO ENCONTRADO, REFAZER TRIAGEM"; caracteristica.value="CORRETIVA"; }
+    else if(["RAL QUALIDADE","TCQ","INCIDENTE CORRETIVO"].includes(v)){ 
+        tipoAcesso.innerHTML=`<option value="INDIFERENTE">INDIFERENTE</option>`; 
+        caracteristica.value="PREVENTIVA"; 
+        setSintomaPreventiva(); 
+    }
+});
+
+// SINTOMA → PERFIL
+sintoma.addEventListener("change", function(){
+    const atividade = tipoAtividade.value;
+    if(["RAL QUALIDADE","TCQ","INCIDENTE CORRETIVO"].includes(atividade)){
+        if(this.value==="PREVENTIVA POP") perfilTecnico.value="BÁSICO";
+        else if(this.value==="PREVENTIVA CLIENTE") perfilTecnico.value="INTERMEDIÁRIO";
+    }
+});
+
+// ACESSO → PERFIL (REC)
+tipoAcesso.addEventListener("change", function(){
+    const atividade = tipoAtividade.value;
+    const acesso = this.value;
+    if(atividade==="REC"){
+        if(["BSOW","ADE"].includes(acesso)) perfilTecnico.value="INTERMEDIÁRIO";
+        else if(["MÓVEL 4G 5G","BSOD","TERCEIRO","GPON","GPON RESID","CABO INTERNO"].includes(acesso)) perfilTecnico.value="BÁSICO";
+        else if(["FO","RÁDIO","VSAT"].includes(acesso)) perfilTecnico.value="AVANÇADO";
+    }
+    if(atividade==="RAL CORRETIVA" && acesso!=="") perfilTecnico.value="PERFIL NÃO ENCONTRADO, REFAZER TRIAGEM";
+});
+
+// BOTÃO IMEDIATO (funcional)
+btnImediato.addEventListener("click", (e) => {
+    e.preventDefault();
+    // toggle checkbox programmatically so click on label always works
+    chkImediato.checked = !chkImediato.checked;
+    chkImediato.dispatchEvent(new Event('change', { bubbles:true }));
+});
+
+// ligar o change do checkbox (mesma lógica original)
+chkImediato.addEventListener("change", ()=>{
+    if(chkImediato.checked){
+        dataAgendamento.value = "";
+        dataAgendamento.disabled = true;
+        btnImediato.classList.add("checked");
+    }else{
+        dataAgendamento.disabled = false;
+        btnImediato.classList.remove("checked");
+    }
+});
+
+// GERAR CARIMBO SEM "::"
+function gerarCarimbo(){
+    let dados = "";
+    Array.from(document.querySelectorAll("#formulario input, #formulario select, #formulario textarea")).forEach(el=>{
+        let valor = el.value;
+
+        if(el.id==="dataAgendamento") {
+            if(chkImediato.checked) {
+                valor = "IMEDIATO";
+            } else if(valor) {
+                const dt = valor.split("T");
+                valor = dt[0].split("-").reverse().join("/") + " " + dt[1];
+            }
+        }
+
+        if(el.type === "checkbox") return;
+
+        let labelText = "";
+        if(el.previousElementSibling && el.previousElementSibling.tagName === "LABEL") {
+            labelText = el.previousElementSibling.innerText.replace("::", ":").trim();
+        } else {
+            labelText = (el.name || "").replace(/_/g," ").toUpperCase().trim() + ":";
+        }
+
+        dados += `${labelText} ${valor}\n`;
+    });
+    txtArea.textContent = dados;
+    return dados;
+}
+
+document.getElementById("exportarTxt").addEventListener("click", gerarCarimbo);
+
+// Atualiza a prévia quando o carimbo já tiver sido gerado uma vez
+document.getElementById("formulario").addEventListener("input", () => {
+    if(txtArea.textContent.trim()) gerarCarimbo();
+});
+document.getElementById("formulario").addEventListener("change", () => {
+    if(txtArea.textContent.trim()) gerarCarimbo();
+});
+
+// COPIAR CARIMBO
+btnCopiar.addEventListener("click", async () => {
+    const texto = txtArea.textContent.trim();
+
+    if(!texto){
+        alert("Gere o carimbo antes de copiar.");
+        return;
+    }
+
+    try{
+        await navigator.clipboard.writeText(texto);
+        const textoOriginal = btnCopiar.textContent;
+        btnCopiar.textContent = "CARIMBO COPIADO!";
+        setTimeout(() => btnCopiar.textContent = textoOriginal, 1800);
+    }catch(e){
+        // Fallback para navegadores mais antigos ou quando o clipboard estiver bloqueado
+        const temp = document.createElement("textarea");
+        temp.value = texto;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand("copy");
+        document.body.removeChild(temp);
+        alert("Carimbo copiado para a área de transferência.");
+    }
+});
+
+// LIMPAR FORMULÁRIO
+btnLimpar.addEventListener("click", ()=>{
+    document.getElementById("formulario").reset();
+    perfilTecnico.value = "";
+    caracteristica.value = "";
+    centro.innerHTML = `<option value="">Selecione a UF primeiro</option>`;
+    nomeTec.innerHTML = `<option value="">Selecione o Centro de Manutenção primeiro</option>`;
+    txtArea.textContent = "";
+    btnImediato.classList.remove("checked");
+    dataAgendamento.disabled = false;
+});
+</script>
+
+</body>
+</html>
+
